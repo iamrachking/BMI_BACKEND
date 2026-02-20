@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom styles for auth pages */
+@layer base {
+    body {
+        font-family: 'Figtree', sans-serif;
+    }
+}
+
+@layer components {
+    .auth-background {
+        position: relative;
+    }
+}
