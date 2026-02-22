@@ -9,15 +9,6 @@ use App\Http\Controllers\Gestion\UserController;
 use App\Http\Controllers\Gestion\HelpController;
 use Illuminate\Support\Facades\Route;
 
-// Favicon : servi par Laravel pour que ça marche en prod (racine web ≠ public/)
-Route::get('/favicon.ico', function () {
-    $path = public_path('favicon.ico');
-    if (!file_exists($path)) {
-        abort(404);
-    }
-    return response()->file($path, ['Content-Type' => 'image/x-icon']);
-});
-
 // Documentation API (Swagger) — pas de préfixe /api
 Route::get('/api-docs/swagger.json', function () {
     $path = storage_path('api-docs/swagger.json');
