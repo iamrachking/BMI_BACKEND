@@ -3,46 +3,14 @@
 Plateforme complète de gestion des équipements industriels et e-commerce pour l'usine **Bénin Moto Industry (BMI)**.
 
 
-##  Architecture
-
-### Stack Technique
+## Stack
 
 - **Backend** : Laravel
 - **Base de données** : MySQL
-- **Authentification** : Laravel Breeze (Blade)
-- **API** : REST API (pour l'application mobile)
-- **Frontend** : Blade Templates (pour les modules Gestion et Admin)
+- **Auth** : Laravel Breeze (Blade)
+- **Frontend** : Blade (Gestion, Admin)
 
-### Structure du Projet
-
-Le projet est organisé en modules clairs :
-
-```
-app/
-├── Http/Controllers/
-│   ├── Api/          # Controllers API (E-commerce)
-│   ├── Gestion/      # Controllers Blade (Gestion équipements)
-│   ├── Admin/        # Controllers Blade (Admin produits)
-│   └── Auth/         # Controllers Breeze (Authentification)
-├── Models/
-│   ├── Auth/         # User, Role
-│   ├── Gestion/      # Equipment, Maintenance, Failure
-│   └── Ecommerce/    # Category, Product, Cart, Order, etc.
-└── Services/         # Logique métier réutilisable
-
-resources/views/
-├── auth/             # Vues Breeze (login, register, etc.)
-├── gestion/          # Vues module Gestion
-├── admin/            # Vues module Admin
-└── api/              # Documentation API
-
-routes/
-│   ├── api.php                   # Routes API
-│   ├── web.php                   # Routes Web
-│   └── auth.php                  # Routes Auth (Breeze)
-```
-
-## 🚀 Installation
+## Installation
 
 ### Prérequis
 
@@ -90,17 +58,17 @@ DB_PASSWORD=
 php artisan migrate
 ```
 
-7. **Exécuter les seeders (création des rôles)**
+7. **Exécuter les seeders**
 ```bash
 php artisan db:seed
 ```
 
-9. **Compiler les assets**
+8. **Compiler les assets**
 ```bash
 npm run build
 ```
 
-10. **Démarrer le serveur**
+9. **Démarrer le serveur**
 ```bash
 php artisan serve
 ```

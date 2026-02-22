@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('severity'); // faible, moyen, critique
             $table->text('description')->nullable();
             $table->datetime('resolved_at')->nullable();
+            $table->foreignId('assigned_to')->nullable()->constrained('users')->onDelete('set null');
+            $table->timestamp('assigned_at')->nullable();
+            $table->text('intervention_report')->nullable();
             $table->timestamps();
         });
     }

@@ -28,6 +28,13 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if ($request->user()->role->name === 'customer') {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect()->route('login')->with('error', 'Les comptes clients sont gérés via l\'application mobile. Utilisez vos identifiants sur l\'app.');
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

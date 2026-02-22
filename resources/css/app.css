@@ -13,4 +13,7 @@
     .auth-background {
         position: relative;
     }
+    [x-cloak] {
+        display: none !important;
+    }
 }

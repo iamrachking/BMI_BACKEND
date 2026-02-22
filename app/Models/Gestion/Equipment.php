@@ -4,11 +4,15 @@ namespace App\Models\Gestion;
 
 use App\Models\Gestion\Failure;
 use App\Models\Gestion\Maintenance;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Equipment extends Model
 {
+    use HasFactory;
+    protected $table = 'equipments';
+
     protected $fillable = [
         'name',
         'reference',

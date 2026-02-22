@@ -1,6 +1,9 @@
 <x-guest-layout>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
+    @if(session('error'))
+        <div class="mb-4 rounded-lg bg-red-50 border border-red-200 text-red-800 px-4 py-3 text-sm">{{ session('error') }}</div>
+    @endif
 
     <!-- Form Title -->
     <h2 class="text-2xl font-bold text-gray-900 text-center mb-6">Se Connecter</h2>
