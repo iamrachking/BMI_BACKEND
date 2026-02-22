@@ -24,6 +24,8 @@ Plateforme complète de gestion des équipements industriels et e-commerce pour 
 1. **Cloner le projet**
 ```bash
 git clone https://github.com/IFRI-Hackaton-L3-2025-2026/GL-Hack2026-Groupe_5_Backend.git
+```
+```bash
 cd GL-Hack2026-Groupe_5_Backend
 ```
 
@@ -72,6 +74,25 @@ npm run build
 ```bash
 php artisan serve
 ```
+
+## Documentation API (Swagger)
+
+L’API e-commerce (auth, catalogue, panier, commandes, paiement) est documentée en **OpenAPI 3**. Pour générer et consulter la doc :
+
+1. **Générer le fichier Swagger** (à lancer après chaque modification des annotations dans les contrôleurs) :
+```bash
+php vendor/bin/openapi app -o storage/api-docs/swagger.json
+```
+   Ou via Composer :
+```bash
+composer run swagger
+```
+
+2. **Consulter la doc** : avec le serveur démarré, ouvrir dans le navigateur :
+   - **Swagger UI** : [http://localhost:8000/api-docs](http://localhost:8000/api-docs)
+   - **Fichier JSON** : [http://localhost:8000/api-docs/swagger.json](http://localhost:8000/api-docs/swagger.json)
+
+3. **Tester l’API** : utiliser le fichier `api.http` avec l’extension REST Client (VS Code) 
 
 ## Membre du groupe
 
