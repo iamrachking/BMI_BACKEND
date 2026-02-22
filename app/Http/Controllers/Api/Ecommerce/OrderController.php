@@ -229,9 +229,43 @@ class OrderController extends BaseController
         $payment = $fedapay->createPaymentForOrder($order);
 
         if (! $payment) {
-            return $this->error('Impossible d\'initier le paiement FedaPay. Vérifiez la configuration (FEDAPAY_SECRET_KEY).', 422);
+            return $this->error('Impossible d\'initier le paiement. Réessayez plus tard.', 422);
         }
 
-        return $this->success($payment, 'URL de paiement générée. Ouvrez payment_url dans un navigateur ou WebView.', 200);
+        return $this->success($payment, 'Ouvrez payment_url dans un navigateur ou WebView pour payer.', 200);
+    }
+
+    /**
+     * Callback après paiement FedaPay (redirection navigateur / WebView).
+     * FedaPay redirige ici avec ?status=approved&id=transaction_id.
+     */
+    public function paymentCallback(Request $request, Order $order): \Illuminate\Http\Response
+    {
+        $status = $request->query('status', '');
+        $orderId = (int) $order->id;
+
+        $title = $status === 'approved' ? 'Paiement réussi' : 'Paiement';
+        $color = $status === 'approved' ? '#16a34a' : '#ea580c';
+        $message = $status === 'approved'
+            ? "Votre commande #{$orderId} a été payée. Vous pouvez fermer cette page et retourner à l'application."
+            : 'Statut : ' . htmlspecialchars((string) $status) . '. Vous pouvez fermer cette page.';
+
+        $html = <<<HTML
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{$title}</title>
+  <style>body{font-family:system-ui,sans-serif;max-width:400px;margin:2rem auto;padding:1.5rem;text-align:center}h1{color:{$color};font-size:1.5rem}p{color:#374151;line-height:1.6}</style>
+</head>
+<body>
+  <h1>{$title}</h1>
+  <p>{$message}</p>
+</body>
+</html>
+HTML;
+
+        return response($html, 200)->header('Content-Type', 'text/html; charset=utf-8');
     }
 }

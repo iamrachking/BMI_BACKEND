@@ -61,6 +61,14 @@ class WebhookController extends BaseController
     }
 
     /**
+     * GET /webhooks/fedapay — permet à FedaPay de valider l'URL (certains dashboards envoient un GET).
+     */
+    public function fedapayVerify(): JsonResponse
+    {
+        return response()->json(['message' => 'FedaPay webhook endpoint', 'accept' => 'POST'], 200);
+    }
+
+    /**
      * Webhook FedaPay : reçoit les événements (transaction.approved, etc.).
      * Configurer l'URL dans le dashboard FedaPay : https://votre-domaine/api/webhooks/fedapay
      * Optionnel : vérifier X-FedaPay-Signature avec FEDAPAY_WEBHOOK_SECRET.
@@ -90,7 +98,7 @@ class WebhookController extends BaseController
             return response()->json(['message' => 'Event ignoré'], 200);
         }
 
-        $transaction = $payload['data']['transaction'] ?? $payload['transaction'] ?? $payload['data'] ?? null;
+        $transaction = $payload['data']['transaction'] ?? $payload['data']['v1/transaction'] ?? $payload['transaction'] ?? $payload['data'] ?? null;
         if (! $transaction) {
             Log::warning('FedaPay webhook: transaction manquante.');
             return response()->json(['message' => 'Transaction manquante'], 400);

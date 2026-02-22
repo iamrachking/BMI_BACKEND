@@ -35,5 +35,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel']);
 });
 
+// Callback FedaPay après paiement (redirection navigateur / WebView)
+Route::get('/orders/{order}/payment/callback', [OrderController::class, 'paymentCallback']);
+
+// Webhooks (FedaPay = notification transaction.approved ; payment = générique back-office)
+Route::get('/webhooks/fedapay', [WebhookController::class, 'fedapayVerify']);
 Route::post('/webhooks/fedapay', [WebhookController::class, 'fedapay']);
 Route::post('/webhooks/payment', [WebhookController::class, 'payment']);

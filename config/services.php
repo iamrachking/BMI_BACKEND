@@ -41,6 +41,7 @@ return [
         'secret_key' => env('FEDAPAY_SECRET_KEY', ''),
         'environment' => env('FEDAPAY_ENV', 'sandbox'), // sandbox | live
         'webhook_secret' => env('FEDAPAY_WEBHOOK_SECRET', ''),
+        'verify_ssl' => env('FEDAPAY_VERIFY_SSL', true),
         'base_url' => env('FEDAPAY_ENV', 'sandbox') === 'live'
             ? 'https://api.fedapay.com/v1'
             : 'https://sandbox-api.fedapay.com/v1',
