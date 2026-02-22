@@ -1,0 +1,1188 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API AI4BMI",
+        "description": "API E-commerce pour l'app mobile (clients). Authentification : Bearer token (Sanctum) ; seuls POST /register et POST /login sont publics.\n\n**Cycle commande** : création (POST /orders) → statut `pending` → paiement confirmé (webhook ou back-office) → `paid` → expédition → `shipped`. Annulation possible uniquement si `pending` (POST /orders/{id}/cancel). Adresse de livraison : fournie à la commande ou reprise du profil (PATCH /user).",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api",
+            "description": "API"
+        }
+    ],
+    "paths": {
+        "/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Inscription (client)",
+                "description": "Réservé aux clients. Crée un compte avec le rôle « customer ». Retourne un token et l'utilisateur (comme login).",
+                "operationId": "578fb78607da6c1a230eeaf9c4393d76",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Compte créé",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string"
+                                                },
+                                                "token_type": {
+                                                    "type": "string",
+                                                    "example": "Bearer"
+                                                },
+                                                "user": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "email": {
+                                                            "type": "string"
+                                                        },
+                                                        "role": {
+                                                            "type": "string",
+                                                            "example": "customer"
+                                                        },
+                                                        "phone": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        },
+                                                        "address": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation (email déjà utilisé, etc.)"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Connexion (email + mot de passe)",
+                "description": "Retourne un token Sanctum et les infos utilisateur. Utiliser le token dans l'en-tête Authorization: Bearer {token}.",
+                "operationId": "591f4aca6b2ad2504cfb286af5fe3e3e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string"
+                                                },
+                                                "token_type": {
+                                                    "type": "string",
+                                                    "example": "Bearer"
+                                                },
+                                                "user": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "email": {
+                                                            "type": "string"
+                                                        },
+                                                        "role": {
+                                                            "type": "string"
+                                                        },
+                                                        "phone": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        },
+                                                        "address": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Identifiants invalides"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Déconnexion",
+                "description": "Révoque le token courant.",
+                "operationId": "febb25ca216ae60c7ffaaad4c6c5ab35",
+                "responses": {
+                    "200": {
+                        "description": "Déconnexion réussie"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/user": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Utilisateur connecté",
+                "description": "Profil de l'utilisateur authentifié.",
+                "operationId": "bb33f9804f8da29e95adc9a8437008f6",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "email": {
+                                                    "type": "string"
+                                                },
+                                                "role": {
+                                                    "type": "string"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "address": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Modifier le profil",
+                "description": "Met à jour le nom, téléphone, adresse. L'email peut être modifié (vérifier unicité).",
+                "operationId": "789c86db4d05d8b368fe3131bfc1d1d6",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profil mis à jour"
+                    },
+                    "422": {
+                        "description": "Validation (ex. email déjà utilisé)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/user/photo": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Changer la photo de profil",
+                "description": "Envoi en multipart/form-data avec le champ « photo » (image, max 2 Mo). Remplace l'ancienne photo. Nécessite php artisan storage:link.",
+                "operationId": "0063bbbd2c000cf8a92edd061e5d4146",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "photo": {
+                                        "description": "Image (jpg, png, etc.)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Photo mise à jour"
+                    },
+                    "422": {
+                        "description": "Fichier invalide ou trop lourd"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/cart": {
+            "get": {
+                "tags": [
+                    "E-commerce"
+                ],
+                "summary": "Voir le panier",
+                "description": "Panier de l'utilisateur (créé si vide). Lignes avec product et quantity.",
+                "operationId": "116cee7f7f059b94f814b380f5c94407",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "E-commerce"
+                ],
+                "summary": "Vider le panier",
+                "description": "Supprime toutes les lignes du panier.",
+                "operationId": "7c4dd8337163adfceb3f8eb18e2b5787",
+                "responses": {
+                    "200": {
+                        "description": "Panier vidé"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/cart/items": {
+            "post": {
+                "tags": [
+                    "E-commerce"
+                ],
+                "summary": "Ajouter au panier",
+                "description": "Ajoute un produit ou augmente la quantité. Vérification du stock.",
+                "operationId": "5a91e43f87df70933884b8d02b9033a2",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "product_id",
+                                    "quantity"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer"
+                                    },
+                                    "quantity": {
+                                        "type": "integer",
+                                        "minimum": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Article ajouté"
+                    },
+                    "422": {
+                        "description": "Stock insuffisant"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/cart/items/{cartItem}": {
+            "delete": {
+                "tags": [
+                    "E-commerce"
+                ],
+                "summary": "Supprimer une ligne du panier",
+                "operationId": "85548c85fd2e72000ff4b7187abb1a56",
+                "parameters": [
+                    {
+                        "name": "cartItem",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ligne supprimée"
+                    },
+                    "403": {
+                        "description": "Non autorisé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "E-commerce"
+                ],
+                "summary": "Modifier une ligne du panier",
+                "description": "Mettre à jour la quantité. Si quantity=0, la ligne est supprimée.",
+                "operationId": "366322f20dd6e7f97a5ac1e64a6eea22",
+                "parameters": [
+                    {
+                        "name": "cartItem",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "quantity"
+                                ],
+                                "properties": {
+                                    "quantity": {
+                                        "type": "integer",
+                                        "minimum": 0
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Non autorisé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/categories": {
+            "get": {
+                "tags": [
+                    "E-commerce"
+                ],
+                "summary": "Liste des catégories",
+                "description": "Catalogue. Option : with_products=1 pour inclure les produits, per_page. Authentification requise.",
+                "operationId": "4437fb2f730d22bbead5d0cf7ebf018b",
+                "parameters": [
+                    {
+                        "name": "with_products",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/categories/{id}": {
+            "get": {
+                "tags": [
+                    "E-commerce"
+                ],
+                "summary": "Détail d'une catégorie",
+                "description": "Catégorie avec liste des produits. Authentification requise.",
+                "operationId": "247e38ba99c917026c2cdaba992de1ef",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "404": {
+                        "description": "Non trouvé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/orders": {
+            "get": {
+                "tags": [
+                    "E-commerce"
+                ],
+                "summary": "Liste des commandes",
+                "description": "Commandes de l'utilisateur. Filtres : status (pending, paid, shipped, cancelled), per_page. Réponse paginée.",
+                "operationId": "cfbed8ec3108ef0918adcf3d17a8d501",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "pending",
+                                "paid",
+                                "shipped",
+                                "cancelled"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/OrderResponse"
+                                            }
+                                        },
+                                        "meta": {
+                                            "description": "Pagination",
+                                            "type": "object"
+                                        },
+                                        "links": {
+                                            "description": "Liens pagination",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "E-commerce"
+                ],
+                "summary": "Créer une commande",
+                "description": "Crée une commande à partir du panier. Adresse de livraison : fournie dans le body ou prise du profil (PATCH /user). Stock vérifié, panier vidé. Statut initial : pending.",
+                "operationId": "c9998a283e5013a08ff655c802b61cbd",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "shipping_address": {
+                                        "description": "Adresse de livraison (sinon celle du profil)",
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "shipping_phone": {
+                                        "description": "Téléphone livraison (sinon celui du profil)",
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Commande créée (statut pending)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Commande créée."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/OrderResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Panier vide ou stock insuffisant"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/orders/{id}": {
+            "get": {
+                "tags": [
+                    "E-commerce"
+                ],
+                "summary": "Détail d'une commande",
+                "description": "Détail avec adresse de livraison et lignes (items).",
+                "operationId": "b25a937f2f0c4023f41c9e279687033c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/OrderResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Non autorisé"
+                    },
+                    "404": {
+                        "description": "Non trouvé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/orders/{id}/cancel": {
+            "post": {
+                "tags": [
+                    "E-commerce"
+                ],
+                "summary": "Annuler une commande",
+                "description": "Annule une commande en statut « pending » uniquement. Le stock des produits est recrédité.",
+                "operationId": "bb5b8f90c342274a8ab6969893e46108",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Commande annulée (stock recrédité)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/OrderResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Non autorisé"
+                    },
+                    "404": {
+                        "description": "Commande non trouvée"
+                    },
+                    "422": {
+                        "description": "Commande non annulable (déjà payée, expédiée ou annulée)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/orders/{id}/payment": {
+            "post": {
+                "tags": [
+                    "E-commerce"
+                ],
+                "summary": "Initier le paiement FedaPay",
+                "description": "Pour une commande en statut pending, crée une transaction FedaPay (compte test) et retourne l'URL de paiement. L'app ouvre cette URL (WebView/navigateur) ; après paiement, FedaPay envoie un webhook et la commande passe en paid.",
+                "operationId": "4755af94fb8c5f2d7018af9b55a79dcc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "payment_url": {
+                                                    "description": "URL à ouvrir pour payer",
+                                                    "type": "string"
+                                                },
+                                                "token": {
+                                                    "type": "string"
+                                                },
+                                                "transaction_id": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Non autorisé"
+                    },
+                    "404": {
+                        "description": "Commande non trouvée"
+                    },
+                    "422": {
+                        "description": "Commande déjà payée ou non pending / FedaPay non configuré"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/products": {
+            "get": {
+                "tags": [
+                    "E-commerce"
+                ],
+                "summary": "Liste des produits",
+                "description": "Catalogue. Filtres : category_id, search, per_page. Authentification requise.",
+                "operationId": "1f38848511def488712c7ce0b68d389c",
+                "parameters": [
+                    {
+                        "name": "category_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/products/{id}": {
+            "get": {
+                "tags": [
+                    "E-commerce"
+                ],
+                "summary": "Détail d'un produit",
+                "description": "Authentification requise.",
+                "operationId": "d34acc37dcebc067282733da735f4c4f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "404": {
+                        "description": "Non trouvé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/webhooks/payment": {
+            "post": {
+                "tags": [
+                    "Webhooks"
+                ],
+                "summary": "Confirmation de paiement (webhook)",
+                "description": "Appelé par le prestataire de paiement ou le back-office pour passer une commande en « paid ». Secret requis (PAYMENT_WEBHOOK_SECRET). En production, préférer une signature HMAC.",
+                "operationId": "43a358f197e6ff0e8590e8113d2d1508",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "order_id",
+                                    "secret"
+                                ],
+                                "properties": {
+                                    "order_id": {
+                                        "description": "ID de la commande",
+                                        "type": "integer"
+                                    },
+                                    "secret": {
+                                        "description": "Clé secrète (PAYMENT_WEBHOOK_SECRET)",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Commande marquée comme payée"
+                    },
+                    "400": {
+                        "description": "Secret invalide ou manquant"
+                    },
+                    "404": {
+                        "description": "Commande non trouvée"
+                    },
+                    "422": {
+                        "description": "Commande non en statut pending"
+                    }
+                }
+            }
+        },
+        "/webhooks/fedapay": {
+            "post": {
+                "tags": [
+                    "Webhooks"
+                ],
+                "summary": "Webhook FedaPay",
+                "description": "Appelé par FedaPay lors d'événements (transaction.approved). Passe la commande en « paid ». Configurer l'URL dans le dashboard FedaPay (compte test ou live).",
+                "operationId": "1b270b6ca5298b2b2fb11ccf1dcc7bfd",
+                "requestBody": {
+                    "description": "Payload FedaPay (event, data.transaction...)"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Traité"
+                    },
+                    "400": {
+                        "description": "Payload invalide"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "OrderResponse": {
+                "description": "Commande avec adresse de livraison et lignes",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "total_amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 99.5
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "paid",
+                            "shipped",
+                            "cancelled"
+                        ]
+                    },
+                    "shipping_address": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "shipping_phone": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "items": {
+                        "description": "Lignes de la commande (product, quantity, price, subtotal)",
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Inscription, connexion, profil utilisateur (adresse, photo)"
+        },
+        {
+            "name": "E-commerce",
+            "description": "Catalogue, panier, commandes (toutes sous authentification)"
+        },
+        {
+            "name": "Webhooks",
+            "description": "Notification paiement (appelé par prestataire ou back-office)"
+        }
+    ]
+}

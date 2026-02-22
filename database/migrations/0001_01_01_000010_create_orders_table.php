@@ -16,6 +16,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict'); // client
             $table->decimal('total_amount', 10, 2);
             $table->string('status')->default('pending'); // en_attente , payé, expierée, annulée
+            $table->text('shipping_address')->nullable();
+            $table->string('shipping_phone')->nullable();
+            $table->string('fedapay_transaction_id')->nullable();
             $table->timestamps();
         });
     }

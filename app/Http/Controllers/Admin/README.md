@@ -1,11 +1,29 @@
 # Module Admin (Administration E-commerce)
 
-Contrôleurs Blade pour l'administration des produits, commandes et stocks.
+Espace d’administration pour la boutique (catégories, produits, commandes).  
+**Accès :** administrateurs et gestionnaires (middleware `admin.ecommerce`).  
+**Layout :** même dashboard que le module Gestion (`gestion.layouts.dashboard`).
 
-## Contrôleurs à créer :
+## Contrôleurs
 
-- `ProductAdminController.php` - CRUD produits et catégories
-- `OrderAdminController.php` - Gestion des commandes
-- `StockController.php` - Gestion des stocks
+| Contrôleur | Rôle |
+|------------|------|
+| `AdminDashboardController` | Tableau de bord (stats, commandes récentes) |
+| `CategoryAdminController` | CRUD catégories (sauf show) |
+| `ProductAdminController` | CRUD produits complet |
+| `OrderAdminController` | Liste commandes, détail, mise à jour du statut |
 
-## Routes préfixées : `/admin`
+## Routes (préfixe `/admin`)
+
+- `GET /admin` → tableau de bord
+- `GET/POST /admin/categories` → index, create, store
+- `GET/PATCH/DELETE /admin/categories/{category}` → edit, update, destroy
+- `GET/POST /admin/products` → index, create, store
+- `GET/PATCH/DELETE /admin/products/{product}` → show, edit, update, destroy
+- `GET /admin/orders` → index
+- `GET /admin/orders/{order}` → show
+- `PATCH /admin/orders/{order}/status` → updateStatus
+
+## Vues
+
+Toutes sous `resources/views/admin/` : `dashboard`, `categories`, `products`, `orders`.

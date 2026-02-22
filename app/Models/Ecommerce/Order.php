@@ -14,6 +14,9 @@ class Order extends Model
         'user_id',
         'total_amount',
         'status',
+        'shipping_address',
+        'shipping_phone',
+        'fedapay_transaction_id',
     ];
 
     protected $casts = [

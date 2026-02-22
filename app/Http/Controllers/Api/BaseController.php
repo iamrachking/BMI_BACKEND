@@ -4,19 +4,27 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class BaseController extends Controller
 {
     /**
-     * Success response
+     * Réponse succès (accepte Resource, ResourceCollection ou tableau).
      */
-    protected function success($data = null, string $message = 'Success', int $code = 200): JsonResponse
+    protected function success(mixed $data = null, string $message = 'OK', int $code = 200): JsonResponse
     {
-        return response()->json([
+        $payload = [
             'success' => true,
             'message' => $message,
-            'data' => $data,
-        ], $code);
+        ];
+
+        if ($data instanceof JsonResource) {
+            $payload['data'] = $data->response()->getData(true);
+            return response()->json($payload, $code);
+        }
+
+        $payload['data'] = $data;
+        return response()->json($payload, $code);
     }
 
     /**

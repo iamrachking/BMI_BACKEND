@@ -11,7 +11,13 @@ class Category extends Model
     protected $fillable = [
         'name',
         'description',
+        'image',
     ];
+
+    public function imageUrl(): ?string
+    {
+        return $this->image ? asset('storage/' . $this->image) : null;
+    }
 
     /**
      * Get the products for the category.

@@ -1,0 +1,262 @@
+# =============================================================================
+# API AI4BMI – Fichier de tests HTTP (REST Client / JetBrains HTTP Client)
+# =============================================================================
+# 1. Définir BASE_URL (ex: http://localhost:8000 ou http://votre-domaine.test)
+# 2. Lancer une requête "Login" puis copier le token dans TOKEN pour les autres appels
+# 3. Cliquer sur "Send Request" au-dessus de chaque bloc pour l'exécuter
+# =============================================================================
+
+@baseUrl = http://localhost:8000/api
+@token = 2|YGQdptB9OvSkQ0YFogSLZN9ZevtrTtDFFZcuR0364f247ea8
+
+# Si pas de variable d'environnement : mettez ici le token après un login réussi
+# @token = votre_token_ici
+
+
+# =============================================================================
+# AUTH – Inscription & Connexion (endpoints publics)
+# =============================================================================
+
+### Inscription (créer un compte client)
+# @name register
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+  "name": "Jean Dupont",
+  "email": "jean.dupont@example.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "phone": "+22890123456",
+  "address": "123 rue du Marché, Lomé"
+}
+
+### Connexion – récupérer le token (à utiliser dans Authorization pour les requêtes suivantes)
+# @name login
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "email": "jean.dupont@example.com",
+  "password": "password123"
+}
+
+
+# =============================================================================
+# PROFIL UTILISATEUR (authentification requise)
+# =============================================================================
+
+### Profil utilisateur connecté
+GET {{baseUrl}}/user
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Modifier le profil (nom, email, phone, address)
+PATCH {{baseUrl}}/user
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Jean Dupont",
+  "email": "jean.dupont@example.com",
+  "phone": "+22890123456",
+  "address": "123 rue du Marché, Lomé"
+}
+
+### Photo de profil (multipart : remplacer photo.jpg par le chemin de ton image)
+POST {{baseUrl}}/user/photo
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=boundary
+Accept: application/json
+
+--boundary
+Content-Disposition: form-data; name="photo"; filename="photo.jpg"
+Content-Type: image/jpeg
+
+< ./photo.jpg
+--boundary--
+
+### Déconnexion (révoque le token)
+POST {{baseUrl}}/logout
+Authorization: Bearer {{token}}
+Accept: application/json
+
+
+# =============================================================================
+# CATALOGUE – Catégories (authentification requise)
+# =============================================================================
+
+### Liste des catégories
+GET {{baseUrl}}/categories
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Liste des catégories avec produits inclus
+GET {{baseUrl}}/categories?with_products=1&per_page=10
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Détail d'une catégorie (remplacer 1 par l'ID réel)
+GET {{baseUrl}}/categories/1
+Authorization: Bearer {{token}}
+Accept: application/json
+
+
+# =============================================================================
+# CATALOGUE – Produits (authentification requise)
+# =============================================================================
+
+### Liste des produits
+GET {{baseUrl}}/products
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Liste des produits avec filtres
+GET {{baseUrl}}/products?category_id=1&search=phone&per_page=15
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Détail d'un produit (remplacer 1 par l'ID réel)
+GET {{baseUrl}}/products/1
+Authorization: Bearer {{token}}
+Accept: application/json
+
+
+# =============================================================================
+# PANIER (authentification requise)
+# =============================================================================
+
+### Voir le panier
+GET {{baseUrl}}/cart
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Vider le panier
+DELETE {{baseUrl}}/cart
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Ajouter un produit au panier (product_id et quantity)
+POST {{baseUrl}}/cart/items
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "product_id": 1,
+  "quantity": 2
+}
+
+### Modifier la quantité d'une ligne (remplacer 1 par cart_item_id ; 0 = supprimer la ligne)
+PATCH {{baseUrl}}/cart/items/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "quantity": 3
+}
+
+### Supprimer une ligne du panier (remplacer 1 par cart_item_id)
+DELETE {{baseUrl}}/cart/items/1
+Authorization: Bearer {{token}}
+Accept: application/json
+
+
+# =============================================================================
+# COMMANDES (authentification requise)
+# =============================================================================
+
+### Liste des commandes
+GET {{baseUrl}}/orders
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Liste des commandes filtrée par statut
+GET {{baseUrl}}/orders?status=pending&per_page=10
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Détail d'une commande (remplacer 1 par order_id)
+GET {{baseUrl}}/orders/1
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Créer une commande (à partir du panier)
+# Adresse optionnelle : si absente, prise du profil utilisateur
+POST {{baseUrl}}/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "shipping_address": "45 avenue du Commerce, Lomé",
+  "shipping_phone": "+22890123456"
+}
+
+### Créer une commande sans adresse (utilise profil)
+POST {{baseUrl}}/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{}
+
+### Initier le paiement FedaPay (remplacer 1 par order_id)
+# Retourne payment_url à ouvrir dans un navigateur / WebView
+POST {{baseUrl}}/orders/1/payment
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Annuler une commande (pending uniquement ; remplacer 1 par order_id)
+POST {{baseUrl}}/orders/1/cancel
+Authorization: Bearer {{token}}
+Accept: application/json
+
+
+# =============================================================================
+# WEBHOOKS (sans authentification Bearer – pour tests ou appel externe)
+# =============================================================================
+
+### Webhook confirmation paiement (secret = PAYMENT_WEBHOOK_SECRET dans .env)
+# Utilisé par un prestataire ou back-office pour marquer une commande comme payée
+POST {{baseUrl}}/webhooks/payment
+Content-Type: application/json
+Accept: application/json
+
+{
+  "order_id": 1,
+  "secret": "votre_PAYMENT_WEBHOOK_SECRET"
+}
+
+### Webhook FedaPay (exemple payload transaction.approved)
+# En production, appelé par FedaPay ; pour test manuel uniquement
+POST {{baseUrl}}/webhooks/fedapay
+Content-Type: application/json
+Accept: application/json
+
+{
+  "event": "transaction.approved",
+  "data": {
+    "transaction": {
+      "id": "tr_xxx",
+      "custom_metadata": { "order_id": 1 }
+    }
+  }
+}
+
+
+# =============================================================================
+# ORDRE DE TEST RECOMMANDÉ
+# =============================================================================
+# 1. register  → créer un compte
+# 2. login     → récupérer le token, le mettre dans @token (ou API_TOKEN en .env)
+# 3. GET /categories puis GET /products → voir le catalogue
+# 4. POST /cart/items → ajouter des produits au panier
+# 5. GET /cart → vérifier le panier
+# 6. POST /orders → créer une commande (panier vidé)
+# 7. GET /orders puis GET /orders/1 → voir la commande
+# 8. POST /orders/1/payment → obtenir l’URL FedaPay (ou POST /webhooks/payment pour simuler paiement)
+# 9. POST /orders/1/cancel → annuler une commande pending si besoin
+# =============================================================================

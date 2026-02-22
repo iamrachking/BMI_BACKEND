@@ -18,11 +18,21 @@ class Product extends Model
         'price',
         'stock_quantity',
         'image_url',
+        'image',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
     ];
+
+    /** URL de l'image : upload (image) prioritaire, sinon image_url pour l'API */
+    public function imageUrl(): ?string
+    {
+        if ($this->image) {
+            return asset('storage/' . $this->image);
+        }
+        return $this->image_url ?: null;
+    }
 
     /**
      * Get the category that owns the product.

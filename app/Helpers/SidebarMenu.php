@@ -47,6 +47,34 @@ class SidebarMenu
             ];
         }
 
+        // Administration e-commerce (admin + gestionnaire)
+        if ($user->hasRole('admin') || $user->hasRole('gestionnaire')) {
+            $items[] = [
+                'label' => 'Boutique',
+                'url'   => route('admin.dashboard'),
+                'icon'  => 'fa-store',
+                'route' => 'admin.dashboard',
+            ];
+            $items[] = [
+                'label' => 'Catégories',
+                'url'   => route('admin.categories.index'),
+                'icon'  => 'fa-folder',
+                'route' => 'admin.categories.*',
+            ];
+            $items[] = [
+                'label' => 'Produits',
+                'url'   => route('admin.products.index'),
+                'icon'  => 'fa-box',
+                'route' => 'admin.products.*',
+            ];
+            $items[] = [
+                'label' => 'Commandes',
+                'url'   => route('admin.orders.index'),
+                'icon'  => 'fa-shopping-cart',
+                'route' => 'admin.orders.*',
+            ];
+        }
+
         $items[] = [
             'label' => 'Aide',
             'url'   => route('help'),

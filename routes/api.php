@@ -1,11 +1,39 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Ecommerce\CartController;
+use App\Http\Controllers\Api\Ecommerce\CategoryController;
+use App\Http\Controllers\Api\Ecommerce\OrderController;
+use App\Http\Controllers\Api\Ecommerce\ProductController;
+use App\Http\Controllers\Api\WebhookController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+// Authentification de l'app mobile e-commerce clients uniquement  
+Route::post('/register', [LoginController::class, 'register']);
+Route::post('/login', [LoginController::class, 'login']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', [LoginController::class, 'user']);
+    Route::patch('/user', [LoginController::class, 'update']);
+    Route::post('/user/photo', [LoginController::class, 'updatePhoto']);
+    Route::post('/logout', [LoginController::class, 'logout']);
 
-// Module 1 (Gestion) : pour une API consommée par d'autres clients, créer les contrôleurs dans App\Http\Controllers\Api\Gestion\
-// Module 2 (E-commerce) : routes API pour l'app mobile (catalogue, panier, commandes, etc.)
+    Route::get('/categories', [CategoryController::class, 'index']);
+    Route::get('/categories/{category}', [CategoryController::class, 'show']);
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::get('/products/{product}', [ProductController::class, 'show']);
+
+    Route::get('/cart', [CartController::class, 'show']);
+    Route::delete('/cart', [CartController::class, 'clear']);
+    Route::post('/cart/items', [CartController::class, 'addItem']);
+    Route::patch('/cart/items/{cartItem}', [CartController::class, 'updateItem']);
+    Route::delete('/cart/items/{cartItem}', [CartController::class, 'removeItem']);
+
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/{order}', [OrderController::class, 'show']);
+    Route::post('/orders', [OrderController::class, 'store']);
+    Route::post('/orders/{order}/payment', [OrderController::class, 'initiatePayment']);
+    Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel']);
+});
+
+Route::post('/webhooks/fedapay', [WebhookController::class, 'fedapay']);
+Route::post('/webhooks/payment', [WebhookController::class, 'payment']);
