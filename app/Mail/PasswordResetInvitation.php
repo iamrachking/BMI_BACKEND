@@ -14,6 +14,7 @@ class PasswordResetInvitation extends Mailable
 
     public function __construct(
         public string $resetUrl,
+        public string $deepLinkUrl,
         public string $userName,
         public ?string $logoDataUri = null
     ) {}

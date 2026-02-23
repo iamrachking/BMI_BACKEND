@@ -17,11 +17,11 @@
             <p style="margin: 0 0 14px; color: #2e4053; line-height: 1.6;">Bonjour{{ $userName ? ' ' . $userName : '' }},</p>
             <p style="margin: 0 0 14px; color: #2e4053; line-height: 1.6;">Vous avez demandé à définir ou réinitialiser votre mot de passe sur <strong style="color: #2e4053;">{{ config('app.name') }}</strong>.</p>
             <p style="margin: 0 0 14px; color: #2e4053; line-height: 1.6;">Cliquez sur le bouton ci-dessous pour continuer :</p>
-            <a href="{{ $resetUrl }}" style="display: inline-block; margin: 16px 0; padding: 12px 24px; background-color: #2e4053; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px;">Réinitialiser mon mot de passe</a>
-            <p style="margin: 0 0 14px; color: #2e4053; line-height: 1.6;">Ce lien est sécurisé et valable 60 minutes.</p>
+            <a href="{{ $deepLinkUrl }}" style="display: inline-block; margin: 16px 0; padding: 12px 24px; background-color: #2e4053; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px;">Réinitialiser mon mot de passe</a>
+            <p style="margin: 0 0 14px; color: #2e4053; line-height: 1.6;">Ce lien ouvre l’application BMI (ou la page web de réinitialisation). Il est valable 60 minutes.</p>
             <p style="margin: 0 0 14px; color: #2e4053; line-height: 1.6;">Après avoir défini votre mot de passe, vous pourrez vous connecter avec votre adresse email.</p>
             <p style="margin-top: 24px; color: #2e4053; line-height: 1.6;">Cordialement,<br><strong style="color: #2e4053;">L'équipe {{ config('app.name') }}</strong></p>
-            <p style="margin-top: 20px; font-size: 13px; color: #6b7280; line-height: 1.5;">Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :<br>{{ $resetUrl }}</p>
+            <p style="margin-top: 20px; font-size: 13px; color: #6b7280; line-height: 1.5;">Sur ordinateur ou si le lien ne s’ouvre pas dans l’app, utilisez ce lien web :<br><a href="{{ $resetUrl }}" style="color: #2e4053;">{{ $resetUrl }}</a></p>
         </div>
         <!-- Footer : même aspect que le header (#2e4053, texte blanc) -->
         <div style="background-color: #2e4053; color: #ffffff; padding: 20px 24px; text-align: center;">
