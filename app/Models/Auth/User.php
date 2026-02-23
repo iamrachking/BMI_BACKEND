@@ -117,11 +117,11 @@ class User extends Authenticatable
     {
         $email = $this->getEmailForPasswordReset();
         $resetUrl = route('password.reset', ['token' => $token, 'email' => $email]);
-        $deepLinkUrl = sprintf(
-            'bmi://reset-password?token=%s&email=%s',
-            urlencode($token),
-            urlencode($email)
-        );
+        $baseUrl = rtrim(config('app.url'), '/');
+        $appResetUrl = $baseUrl . '/reset-password?' . http_build_query([
+            'token' => $token,
+            'email' => $email,
+        ]);
         $firstName = $this->name ? trim(explode(' ', $this->name)[0] ?? '') : '';
 
         $logoDataUri = null;
@@ -134,6 +134,6 @@ class User extends Authenticatable
             }
         }
 
-        Mail::to($email)->send(new PasswordResetInvitation($resetUrl, $deepLinkUrl, $firstName, $logoDataUri));
+        Mail::to($email)->send(new PasswordResetInvitation($resetUrl, $appResetUrl, $firstName, $logoDataUri));
     }
 }

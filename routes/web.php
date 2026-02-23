@@ -22,6 +22,20 @@ Route::get('/api-docs', function () {
     return view('api-docs');
 })->name('api-docs');
 
+// Lien HTTPS dans l'email « mot de passe oublié » (App Links / Universal Links). Sur mobile ouvre l'app ; sinon affiche une page avec lien vers le formulaire web.
+Route::get('/reset-password', function (\Illuminate\Http\Request $request) {
+    $token = $request->query('token');
+    $email = $request->query('email');
+    $webResetUrl = $token && $email
+        ? route('password.reset', ['token' => $token, 'email' => $email])
+        : url('/forgot-password');
+    return view('auth.reset-password-app-link', [
+        'webResetUrl' => $webResetUrl,
+        'token' => $token,
+        'email' => $email,
+    ]);
+})->name('password.app-link')->middleware('guest');
+
 Route::get('/', function () {
     if (auth()->check()) {
         $user = auth()->user();

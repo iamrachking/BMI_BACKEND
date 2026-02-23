@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.example.ai4bmi",
+      "sha256_cert_fingerprints": [
+        "AC:DE:33:55:A5:E7:99:F8:5C:AC:D9:4B:9B:B0:EF:C5:EE:F4:34:F0:A4:64:82:15:3E:D5:AA:C4:BD:A6:2E:1D"
+      ]
+    }
+  }
+]

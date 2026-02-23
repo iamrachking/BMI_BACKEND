@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "TEAMID.com.example.ai4bmi",
+        "paths": ["/reset-password", "/reset-password*"]
+      }
+    ]
+  }
+}

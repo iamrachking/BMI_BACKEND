@@ -14,7 +14,8 @@ class PasswordResetInvitation extends Mailable
 
     public function __construct(
         public string $resetUrl,
-        public string $deepLinkUrl,
+        /** URL HTTPS pour le bouton (App Links / Universal Links) : https://domain.com/reset-password?token=...&email=... */
+        public string $appResetUrl,
         public string $userName,
         public ?string $logoDataUri = null
     ) {}
