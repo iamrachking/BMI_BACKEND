@@ -8,13 +8,17 @@ use App\Http\Controllers\Api\Ecommerce\ProductController;
 use App\Http\Controllers\Api\WebhookController;
 use Illuminate\Support\Facades\Route;
 
-// Authentification de l'app mobile e-commerce clients uniquement  
+// Authentification de l'app mobile e-commerce clients uniquement
 Route::post('/register', [LoginController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login']);
+Route::post('/forgot-password', [LoginController::class, 'forgotPassword']);
+Route::post('/password/reset', [LoginController::class, 'resetPassword']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [LoginController::class, 'user']);
     Route::patch('/user', [LoginController::class, 'update']);
     Route::post('/user/photo', [LoginController::class, 'updatePhoto']);
+    Route::patch('/user/password', [LoginController::class, 'changePassword']);
     Route::post('/logout', [LoginController::class, 'logout']);
 
     Route::get('/categories', [CategoryController::class, 'index']);

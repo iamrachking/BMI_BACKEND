@@ -12,15 +12,15 @@
             <img src="__LOGO_CID__" alt="{{ config('app.name') }}" style="max-height: 40px; width: auto; display: inline-block; vertical-align: middle;" />
             <div style="margin: 8px 0 0; font-size: 18px; font-weight: 600; color: #ffffff;">{{ config('app.name') }}</div>
         </div>
-        <!-- Body : fond blanc, texte #2e4053 -->
+        <!-- Body : fond blanc, texte #2e4053 (même style que failure-assigned et autres mails de l'app) -->
         <div style="padding: 24px; background-color: #ffffff; color: #2e4053;">
             <p style="margin: 0 0 14px; color: #2e4053; line-height: 1.6;">Bonjour{{ $userName ? ' ' . $userName : '' }},</p>
-            <p style="margin: 0 0 14px; color: #2e4053; line-height: 1.6;">Un compte a été créé pour vous sur la plateforme interne <strong style="color: #2e4053;">{{ config('app.name') }}</strong> de gestion des équipements industriels.</p>
-            <p style="margin: 0 0 14px; color: #2e4053; line-height: 1.6;">Pour activer votre compte et définir votre mot de passe, veuillez cliquer sur le bouton ci-dessous :</p>
-            <a href="{{ $resetUrl }}" style="display: inline-block; margin: 16px 0; padding: 12px 24px; background-color: #2e4053; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px;">Définir mon mot de passe</a>
-            <p style="margin: 0 0 14px; color: #2e4053; line-height: 1.6;">Ce lien est sécurisé et valable pour une durée limitée (60 minutes).</p>
-            <p style="margin: 0 0 14px; color: #2e4053; line-height: 1.6;">Après avoir défini votre mot de passe, vous pourrez vous connecter à la plateforme avec votre adresse email.</p>
-            <p style="margin-top: 24px; color: #2e4053; line-height: 1.6;">Cordialement,<br><strong style="color: #2e4053;">L'équipe Administration</strong></p>
+            <p style="margin: 0 0 14px; color: #2e4053; line-height: 1.6;">Vous avez demandé à définir ou réinitialiser votre mot de passe sur <strong style="color: #2e4053;">{{ config('app.name') }}</strong>.</p>
+            <p style="margin: 0 0 14px; color: #2e4053; line-height: 1.6;">Cliquez sur le bouton ci-dessous pour continuer :</p>
+            <a href="{{ $resetUrl }}" style="display: inline-block; margin: 16px 0; padding: 12px 24px; background-color: #2e4053; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px;">Réinitialiser mon mot de passe</a>
+            <p style="margin: 0 0 14px; color: #2e4053; line-height: 1.6;">Ce lien est sécurisé et valable 60 minutes.</p>
+            <p style="margin: 0 0 14px; color: #2e4053; line-height: 1.6;">Après avoir défini votre mot de passe, vous pourrez vous connecter avec votre adresse email.</p>
+            <p style="margin-top: 24px; color: #2e4053; line-height: 1.6;">Cordialement,<br><strong style="color: #2e4053;">L'équipe {{ config('app.name') }}</strong></p>
             <p style="margin-top: 20px; font-size: 13px; color: #6b7280; line-height: 1.5;">Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :<br>{{ $resetUrl }}</p>
         </div>
         <!-- Footer : même aspect que le header (#2e4053, texte blanc) -->

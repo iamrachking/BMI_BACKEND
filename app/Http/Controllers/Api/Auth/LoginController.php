@@ -6,13 +6,17 @@ use App\Http\Controllers\Api\BaseController;
 use App\Http\Resources\UserResource;
 use App\Models\Auth\Role;
 use App\Models\Auth\User;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use OpenApi\Attributes as OA;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class LoginController extends BaseController
 {
@@ -263,5 +267,123 @@ class LoginController extends BaseController
         $user->load('role');
 
         return $this->success(new UserResource($user), 'Photo de profil mise à jour.', 200);
+    }
+
+    #[OA\Post(
+        path: '/forgot-password',
+        summary: 'Mot de passe oublié',
+        description: 'Envoie un email avec un lien de réinitialisation. Pour des raisons de sécurité, la réponse est identique que l\'email existe ou non.',
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['email'],
+                properties: [new OA\Property(property: 'email', type: 'string', format: 'email')]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Email envoyé si le compte existe'),
+            new OA\Response(response: 422, description: 'Validation (email invalide)'),
+        ]
+    )]
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $status = Password::sendResetLink($request->only('email'));
+
+        if ($status === Password::RESET_THROTTLED) {
+            return $this->error(__($status), 422);
+        }
+
+        return $this->success(null, 'Si un compte existe avec cet email, un lien de réinitialisation a été envoyé.', 200);
+    }
+
+    #[OA\Post(
+        path: '/password/reset',
+        summary: 'Réinitialiser le mot de passe',
+        description: 'Réinitialise le mot de passe avec le token reçu par email (lien ou token affiché).',
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['email', 'token', 'password', 'password_confirmation'],
+                properties: [
+                    new OA\Property(property: 'email', type: 'string', format: 'email'),
+                    new OA\Property(property: 'token', type: 'string', description: 'Token reçu par email'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password'),
+                    new OA\Property(property: 'password_confirmation', type: 'string', format: 'password'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Mot de passe réinitialisé'),
+            new OA\Response(response: 422, description: 'Token invalide ou expiré, ou validation'),
+        ]
+    )]
+    public function resetPassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'token' => 'required|string',
+            'email' => 'required|email',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user) use ($request) {
+                $user->forceFill([
+                    'password' => Hash::make($request->password),
+                    'remember_token' => Str::random(60),
+                ])->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        if ($status !== Password::PASSWORD_RESET) {
+            return $this->error(__($status), 422, ['email' => [__($status)]]);
+        }
+
+        return $this->success(null, 'Mot de passe réinitialisé. Vous pouvez vous connecter.', 200);
+    }
+
+    #[OA\Patch(
+        path: '/user/password',
+        summary: 'Changer le mot de passe',
+        description: 'Modifie le mot de passe de l\'utilisateur connecté. Nécessite le mot de passe actuel.',
+        tags: ['Auth'],
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['current_password', 'password', 'password_confirmation'],
+                properties: [
+                    new OA\Property(property: 'current_password', type: 'string', format: 'password'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password'),
+                    new OA\Property(property: 'password_confirmation', type: 'string', format: 'password'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Mot de passe mis à jour'),
+            new OA\Response(response: 401, description: 'Non authentifié'),
+            new OA\Response(response: 422, description: 'Mot de passe actuel incorrect ou validation'),
+        ]
+    )]
+    public function changePassword(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        $request->user()->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return $this->success(null, 'Mot de passe mis à jour.', 200);
     }
 }
