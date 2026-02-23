@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 // Authentification de l'app mobile e-commerce clients uniquement  
 Route::post('/register', [LoginController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login']);
-Route::middleware('auth:sanctum')->group(function () {
+// Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [LoginController::class, 'user']);
     Route::patch('/user', [LoginController::class, 'update']);
     Route::post('/user/photo', [LoginController::class, 'updatePhoto']);
@@ -33,7 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders', [OrderController::class, 'store']);
     Route::post('/orders/{order}/payment', [OrderController::class, 'initiatePayment']);
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel']);
-});
+// });
 
 // Callback FedaPay après paiement (redirection navigateur / WebView)
 Route::get('/orders/{order}/payment/callback', [OrderController::class, 'paymentCallback']);
