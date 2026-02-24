@@ -1,102 +1,86 @@
-# AI4BMI - Backend Laravel
+# AI4BMI — Backend Laravel
 
-Plateforme complète de gestion des équipements industriels et e-commerce pour l'usine **Bénin Moto Industry (BMI)**.
+Backend de la plateforme **Bénin Moto Industry (BMI)** : gestion des équipements industriels, maintenance, pannes et **e-commerce** (API pour l’app mobile).
 
+---
+
+## Liens utiles
+
+| | Lien |
+|---|------|
+| **Backend (prod)** | https://ai4bmi.cabinet-xaviertermeau.com |
+| **API (prod)** | https://ai4bmi.cabinet-xaviertermeau.com/api |
+| **Documentation API (Swagger)** | https://ai4bmi.cabinet-xaviertermeau.com/api-docs |
+
+
+## Accès de test (back-office)
+
+Après `php artisan db:seed`, un compte administrateur est créé pour accéder au dashboard :
+
+| | Valeur |
+|---|--------|
+| **URL connexion** | https://ai4bmi.cabinet-xaviertermeau.com/login |
+| **Email** | `abdoulrachard@gmail.com` |
+| **Mot de passe** | `password` |
+
+![Connexion](docs/images/login.png)  
+*Écran de connexion au back-office.*
+
+![Dashboard](docs/images/dashboard.png)  
+*Tableau de bord après connexion.*
+
+![Admin e-commerce](docs/images/dashboard_produits.png)  
+*Admin e-commerce — produits et commandes.*
+
+---
 
 ## Stack
 
 - **Backend** : Laravel
 - **Base de données** : MySQL
-- **Auth** : Laravel Breeze (Blade)
-- **Frontend** : Blade (Gestion, Admin)
+- **Auth** : Laravel Breeze (Blade) + Sanctum (API mobile)
+- **Frontend back-office** : Blade (gestion équipements, maintenances, pannes, admin e-commerce)
 
-## Installation
+---
 
-### Prérequis
+## Installation locale
 
-- **PHP** >= 8.2
-- **Composer**
-- **MySQL** >= 5.7
-- **Node.js** >= 18 et **npm**
+**Prérequis** : PHP >= 8.2, Composer, MySQL >= 5.7, Node.js >= 18
 
-### Étapes d'Installation
-
-1. **Cloner le projet**
 ```bash
 git clone https://github.com/IFRI-Hackaton-L3-2025-2026/GL-Hack2026-Groupe_5_Backend.git
-```
-```bash
 cd GL-Hack2026-Groupe_5_Backend
-```
-
-2. **Installer les dépendances PHP**
-```bash
 composer install
-```
-
-3. **Installer les dépendances Node.js**
-```bash
 npm install
-```
-
-4. **Configurer l'environnement**
-```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-5. **Configurer MySQL dans `.env`**
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=ai4bmi
-DB_USERNAME=root
-DB_PASSWORD=
-```
+Configurer la base dans `.env` (DB_DATABASE=ai4bmi, etc.), puis :
 
-6. **Exécuter les migrations**
 ```bash
 php artisan migrate
-```
-
-7. **Exécuter les seeders**
-```bash
 php artisan db:seed
-```
-
-8. **Compiler les assets**
-```bash
 npm run build
-```
-
-9. **Démarrer le serveur**
-```bash
 php artisan serve
 ```
 
-## Documentation API (Swagger)
+- **Back-office** : http://localhost:8000 (login avec le compte admin ci-dessus)
+- **Swagger** : http://localhost:8000/api-docs
 
-L’API e-commerce (auth, catalogue, panier, commandes, paiement) est documentée en **OpenAPI 3**. Pour générer et consulter la doc :
+---
 
-1. **Générer le fichier Swagger** (à lancer après chaque modification des annotations dans les contrôleurs) :
-```bash
-php vendor/bin/openapi app -o storage/api-docs/swagger.json
-```
-   Ou via Composer :
-```bash
-composer run swagger
-```
+## API mobile (e-commerce)
 
-2. **Consulter la doc** : avec le serveur démarré, ouvrir dans le navigateur :
-   - **Swagger UI** : [http://localhost:8000/api-docs](http://localhost:8000/api-docs)
-   - **Fichier JSON** : [http://localhost:8000/api-docs/swagger.json](http://localhost:8000/api-docs/swagger.json)
+L’API utilisée par l’app mobile (auth, catalogue, panier, commandes, paiement FedaPay) est documentée ici :
 
-3. **Tester l’API** : utiliser le fichier `api.http` avec l’extension REST Client (VS Code) 
+- **Référence détaillée** : [docs-reference-pour-app-mobil/API_MOBILE_REFERENCE.md](docs-reference-pour-app-mobil/API_MOBILE_REFERENCE.md) (si le fichier existe dans le dépôt)
+- **Swagger** : `/api-docs` (générer avec `composer run swagger` après modification des contrôleurs API)
 
-## Membre du groupe
+---
 
-- AMADOU Hik Math
-- HOUNGA Nehme
-- LAWINGNI Abdoul
+## Équipe
 
+- AMADOU Hik Math  
+- HOUNGA Nehme  
+- LAWINGNI Abdoul  
