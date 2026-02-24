@@ -12,6 +12,7 @@ Backend de la plateforme **Bénin Moto Industry (BMI)** : gestion des équipemen
 | **API (prod)** | https://ai4bmi.cabinet-xaviertermeau.com/api |
 | **Documentation API (Swagger)** | https://ai4bmi.cabinet-xaviertermeau.com/api-docs |
 | **Rapport du projet** | [Google Drive](https://drive.google.com/file/d/1H9bnzjzVUHdszRzE9Nv4RieIM3vsikzl/view?usp=drive_link) |
+| **Vidéo démo de présentation** | [Google Drive](https://drive.google.com/file/d/1VAmzb2epg3rhIX0En2RAHipzfcDCOUmK/view?usp=drive_link) |
 
 
 ## Accès de test (back-office)
