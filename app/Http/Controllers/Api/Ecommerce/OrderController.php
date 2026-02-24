@@ -236,13 +236,57 @@ class OrderController extends BaseController
     }
 
     /**
+     * Confirmer le paiement côté app mobile.
+     * À appeler quand l'app détecte un paiement réussi (ex. WebView redirigée vers callback avec status=approved).
+     * Évite de devoir changer le statut manuellement dans le backoffice.
+     */
+    #[OA\Post(
+        path: '/orders/{id}/confirm-payment',
+        summary: 'Confirmer le paiement (app mobile)',
+        description: 'Marque la commande comme payée. À appeler par l\'app quand le paiement FedaPay a réussi (ex. après redirection vers callback avec status=approved, ou quand l\'utilisateur revient avec succès). Seule la commande du client connecté et en statut pending peut être confirmée.',
+        tags: ['E-commerce'],
+        security: [['bearerAuth' => []]],
+        parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
+        responses: [
+            new OA\Response(response: 200, description: 'Commande marquée comme payée', content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'success', type: 'boolean', example: true),
+                new OA\Property(property: 'message', type: 'string', example: 'Paiement enregistré.'),
+                new OA\Property(property: 'data', ref: '#/components/schemas/OrderResponse'),
+            ])),
+            new OA\Response(response: 403, description: 'Non autorisé'),
+            new OA\Response(response: 404, description: 'Commande non trouvée'),
+            new OA\Response(response: 422, description: 'Commande déjà payée ou non en attente'),
+        ]
+    )]
+    public function confirmPayment(Request $request, Order $order): JsonResponse
+    {
+        if ((string) $order->user_id !== (string) $request->user()->id) {
+            return $this->error('Non autorisé.', 403);
+        }
+
+        if ($order->status !== 'pending') {
+            return $this->error('Cette commande n\'est plus en attente de paiement.', 422);
+        }
+
+        $order->update(['status' => 'paid']);
+        $order->load('orderItems.product');
+
+        return $this->success(new OrderResource($order), 'Paiement enregistré.', 200);
+    }
+
+    /**
      * Callback après paiement FedaPay (redirection navigateur / WebView).
      * FedaPay redirige ici avec ?status=approved&id=transaction_id.
+     * On met à jour le statut de la commande en « paid » si status=approved (fallback si le webhook n'a pas encore été appelé).
      */
     public function paymentCallback(Request $request, Order $order): \Illuminate\Http\Response
     {
         $status = $request->query('status', '');
         $orderId = (int) $order->id;
+
+        if ($status === 'approved' && $order->status === 'pending') {
+            $order->update(['status' => 'paid']);
+        }
 
         $title = $status === 'approved' ? 'Paiement réussi' : 'Paiement';
         $color = $status === 'approved' ? '#16a34a' : '#ea580c';

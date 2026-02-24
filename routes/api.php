@@ -36,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/orders/{order}', [OrderController::class, 'show']);
     Route::post('/orders', [OrderController::class, 'store']);
     Route::post('/orders/{order}/payment', [OrderController::class, 'initiatePayment']);
+    Route::post('/orders/{order}/confirm-payment', [OrderController::class, 'confirmPayment']);
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel']);
 });
 
