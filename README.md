@@ -11,8 +11,6 @@ Backend de la plateforme **Bénin Moto Industry (BMI)** : gestion des équipemen
 | **Backend (prod)** | https://ai4bmi.cabinet-xaviertermeau.com |
 | **API (prod)** | https://ai4bmi.cabinet-xaviertermeau.com/api |
 | **Documentation API (Swagger)** | https://ai4bmi.cabinet-xaviertermeau.com/api-docs |
-| **Rapport du projet** | [Google Drive](https://drive.google.com/file/d/1H9bnzjzVUHdszRzE9Nv4RieIM3vsikzl/view?usp=drive_link) |
-| **Vidéo démo de présentation** | [Google Drive](https://drive.google.com/file/d/1VAmzb2epg3rhIX0En2RAHipzfcDCOUmK/view?usp=drive_link) |
 
 
 ## Accès de test (back-office)
@@ -50,8 +48,8 @@ Après `php artisan db:seed`, un compte administrateur est créé pour accéder 
 **Prérequis** : PHP >= 8.2, Composer, MySQL >= 5.7, Node.js >= 18
 
 ```bash
-git clone https://github.com/IFRI-Hackaton-L3-2025-2026/GL-Hack2026-Groupe_5_Backend.git
-cd GL-Hack2026-Groupe_5_Backend
+git clone https://github.com/iamrachking/BMI_BACKEND.git
+cd BMI-BACKEND
 composer install
 npm install
 cp .env.example .env
@@ -79,10 +77,3 @@ L’API utilisée par l’app mobile (auth, catalogue, panier, commandes, paieme
 - **Référence détaillée** : [docs-reference-pour-app-mobil/API_MOBILE_REFERENCE.md](docs-reference-pour-app-mobil/API_MOBILE_REFERENCE.md) (si le fichier existe dans le dépôt)
 - **Swagger** : `/api-docs` (générer avec `composer run swagger` après modification des contrôleurs API)
 
----
-
-## Équipe
-
-- AMADOU Hik Math  
-- HOUNGA Nehme  
-- LAWINGNI Abdoul  
