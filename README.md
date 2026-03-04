@@ -31,8 +31,14 @@ Après `php artisan db:seed`, un compte administrateur est créé pour accéder 
 ![Connexion](docs/images/login.png)  
 *Écran de connexion au back-office.*
 
-![Dashboard](docs/images/dashboard.png)  
-*Tableau de bord après connexion.*
+![Dashboard admin](docs/images/admin_dash.png)  
+*Tableau de bord administrateur.*
+
+![Dashboard gestionnaire](docs/images/gestionnaire_dash.png)  
+*Tableau de bord gestionnaire.*
+
+![Dashboard technicien](docs/images/technicien_dash.png)  
+*Tableau de bord technicien.*
 
 ![Admin e-commerce](docs/images/dashboard_produits.png)  
 *Admin e-commerce — produits et commandes.*
@@ -81,4 +87,8 @@ L’API utilisée par l’app mobile (auth, catalogue, panier, commandes, paieme
 
 - **App mobile** : [BMI Mobile](https://github.com/iamrachking/BMI_MOBILE_APP) — dépôt de l’application mobile consommant cette API
 - **Swagger** : `/api-docs` (générer avec `composer run swagger` après modification des contrôleurs API)
+
+![App mobile](docs/images/admin_office_app_mobile.png)  
+*Application mobile BMI — back-office et interface utilisateur.*
+
 
