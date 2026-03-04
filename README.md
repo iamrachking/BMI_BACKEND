@@ -1,5 +1,10 @@
 # AI4BMI — Backend Laravel
 
+[![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=flat-square&logo=laravel&logoColor=white)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?style=flat-square&logo=php&logoColor=white)](https://php.net)
+[![MySQL](https://img.shields.io/badge/MySQL-5.7+-4479A1?style=flat-square&logo=mysql&logoColor=white)](https://mysql.com)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev)
+
 Backend de la plateforme **Bénin Moto Industry (BMI)** : gestion des équipements industriels, maintenance, pannes et **e-commerce** (API pour l’app mobile).
 
 ---
@@ -74,6 +79,6 @@ php artisan serve
 
 L’API utilisée par l’app mobile (auth, catalogue, panier, commandes, paiement FedaPay) est documentée ici :
 
-- **Référence détaillée** : [docs-reference-pour-app-mobil/API_MOBILE_REFERENCE.md](docs-reference-pour-app-mobil/API_MOBILE_REFERENCE.md) (si le fichier existe dans le dépôt)
+- **App mobile** : [BMI Mobile](https://github.com/iamrachking/BMI_MOBILE_APP) — dépôt de l’application mobile consommant cette API
 - **Swagger** : `/api-docs` (générer avec `composer run swagger` après modification des contrôleurs API)
 
